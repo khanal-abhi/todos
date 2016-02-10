@@ -25,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener toListOfTodosListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //Intent intent = new Intent(getBaseContext(),);
+            Intent intent = new Intent(getBaseContext(),ListOfTodos.class);
+            startActivity(intent);
         }
     };
 }
