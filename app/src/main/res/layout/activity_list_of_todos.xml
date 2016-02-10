@@ -17,12 +17,12 @@
         android:weightSum="5">
 
         <ListView
-            android:background="#ff66ff"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="4"></ListView>
 
         <Button
+            android:id="@+id/ToAddAToDo"
             android:textSize="36dp"
             android:textStyle="bold"
             android:textColor="#ccffcc"
