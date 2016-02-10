@@ -14,7 +14,7 @@ public class ThingsToDoDataSourceTest extends ApplicationTest {
 
     public void setUp() throws Exception {
         thingsToDoDataSource = new ThingsToDoDataSource(getContext());
-        thingsToDo = new ArrayList<ThingToDo>();
+        thingsToDo = new ArrayList<>();
 
         thingsToDo.add(new ThingToDo("Wake up"));
         thingsToDo.add(new ThingToDo("Use the bathroom"));
