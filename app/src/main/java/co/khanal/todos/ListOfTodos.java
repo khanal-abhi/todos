@@ -16,12 +16,14 @@ import java.lang.reflect.Array;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ListOfTodos extends AppCompatActivity implements DialogFragmentCompletedListener {
+public class ListOfTodos extends AppCompatActivity implements DeleteDialogue.DialogFragmentCompletedListener, AddTodo.AddTodoListener {
 
     Button ToAddATodo;
     ListView ToDoListView;
     ThingsToDoDataSource thingsToDoDataSource;
     ThingToDo[] thingsToDo;
+
+    final static boolean DEBUG = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +33,8 @@ public class ListOfTodos extends AppCompatActivity implements DialogFragmentComp
         ToAddATodo = (Button) findViewById(R.id.ToAddAToDo);
         ToDoListView = (ListView) findViewById(R.id.ToDoListView);
         thingsToDoDataSource = new ThingsToDoDataSource(this);
-        firstSetup();
+        if(DEBUG)
+            firstSetup();
         setThingsToDo();
         TodoAdapter todoAdapter = new TodoAdapter(this, R.layout.row, thingsToDo);
 
@@ -44,10 +47,11 @@ public class ListOfTodos extends AppCompatActivity implements DialogFragmentComp
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ThingToDo tdd = thingsToDo[position];
-                Toast.makeText(getApplicationContext(),tdd.toString(),Toast.LENGTH_SHORT).show();
-                if(!tdd.isCompleted()){
-                    tdd.setCompleted(true);
-                    updateTodo(tdd);
+                if(tdd.getId() != 0) {
+                    if (!tdd.isCompleted()) {
+                        tdd.setCompleted(true);
+                        updateTodo(tdd);
+                    }
                 }
 
             }
@@ -56,9 +60,19 @@ public class ListOfTodos extends AppCompatActivity implements DialogFragmentComp
         ToDoListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                showDeleteDialog(view, thingsToDo[position]);
+                if(thingsToDo[position].getId() != 0 )
+                    showDeleteDialog(view, thingsToDo[position]);
 
                 return true;
+            }
+        });
+
+        ToAddATodo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getFragmentManager();
+                AddTodo addTodo = new AddTodo();
+                addTodo.show(fragmentManager, "ADDTODO");
             }
         });
     }
@@ -73,24 +87,32 @@ public class ListOfTodos extends AppCompatActivity implements DialogFragmentComp
     }
 
 
-    public void addThings(ThingToDo thingToDo, ThingsToDoDataSource ds){
-        ds.addThingToDo(thingToDo);
-    }
-
-    public void firstSetup(){
+    public void addThing(ThingToDo thingToDo){
         try{
             thingsToDoDataSource.open();
-            thingsToDoDataSource.deleteAllTodos();
-            addThings(new ThingToDo(1, "Wake up", true), thingsToDoDataSource);
-            addThings(new ThingToDo("Go to bathroom"), thingsToDoDataSource);
-            addThings(new ThingToDo("Brush the teeth"), thingsToDoDataSource);
-            addThings(new ThingToDo("Go to work"), thingsToDoDataSource);
+            thingsToDoDataSource.addThingToDo(thingToDo);
             thingsToDoDataSource.close();
         } catch (SQLException e){
             e.printStackTrace();
         }finally {
             thingsToDoDataSource.close();
         }
+    }
+
+    public void firstSetup(){
+        try{
+            thingsToDoDataSource.open();
+            thingsToDoDataSource.deleteAllTodos();
+            thingsToDoDataSource.close();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }finally {
+            thingsToDoDataSource.close();
+        }
+        addThing(new ThingToDo(1, "Wake up", true));
+        addThing(new ThingToDo("Go to bathroom"));
+        addThing(new ThingToDo("Brush the teeth"));
+        addThing(new ThingToDo("Go to work"));
     }
 
     public void setThingsToDo(){
@@ -102,7 +124,7 @@ public class ListOfTodos extends AppCompatActivity implements DialogFragmentComp
             if( tdds.size() > 0 ){
                 thingsToDo = tdds.toArray(new ThingToDo[tdds.size()]);
             } else {
-                ThingToDo[] thingsToDo1 = {new ThingToDo("nothing to do ...")};
+                ThingToDo[] thingsToDo1 = {new ThingToDo(-1, "nothing to do ...", true)};
                 thingsToDo = thingsToDo1;
             }
         } catch (SQLException e){
@@ -117,11 +139,7 @@ public class ListOfTodos extends AppCompatActivity implements DialogFragmentComp
             thingsToDoDataSource.open();
             thingsToDoDataSource.updateThingToDo(thingToDo);
             thingsToDoDataSource.close();
-            setThingsToDo();
-            TodoAdapter todoAdapter = new TodoAdapter(this, R.layout.row, thingsToDo);
-            if(ToDoListView != null){
-                ToDoListView.setAdapter(todoAdapter);
-            }
+            refreshList();
         } catch (SQLException e){
             e.printStackTrace();
         }finally {
@@ -134,11 +152,7 @@ public class ListOfTodos extends AppCompatActivity implements DialogFragmentComp
             thingsToDoDataSource.open();
             thingsToDoDataSource.deleteThingToDo(thingToDo);
             thingsToDoDataSource.close();
-            setThingsToDo();
-            TodoAdapter todoAdapter = new TodoAdapter(this, R.layout.row, thingsToDo);
-            if(ToDoListView != null){
-                ToDoListView.setAdapter(todoAdapter);
-            }
+            refreshList();
         } catch (SQLException e){
             e.printStackTrace();
         }finally {
@@ -146,10 +160,24 @@ public class ListOfTodos extends AppCompatActivity implements DialogFragmentComp
         }
     }
 
+    public void refreshList(){
+        setThingsToDo();
+        TodoAdapter todoAdapter = new TodoAdapter(this, R.layout.row, thingsToDo);
+        if(ToDoListView != null){
+            ToDoListView.setAdapter(todoAdapter);
+        }
+    }
+
     @Override
-    public void onFinishedDialogFragment(boolean dataChanged, ThingToDo thingToDo) {
-        if(dataChanged){
+    public void onTodoDeleted(boolean deleted, ThingToDo thingToDo) {
+        if(deleted){
             deleteTodo(thingToDo);
         }
+    }
+
+    @Override
+    public void onTodoAdded(String title) {
+        addThing(new ThingToDo(title));
+        refreshList();
     }
 }

@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#3366cc"
-    >
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#3366cc">
     <LinearLayout
         android:layout_margin="5dp"
         android:background="#3366cc"
@@ -13,23 +11,21 @@
         android:weightSum="3">
 
         <TextView
-            android:id="@+id/DialogTitle"
+            android:gravity="center"
             android:padding="5dp"
-            android:textColor="#ccffcc"
             android:textSize="24dp"
-            android:text="Delete the To Do:"
+            android:textColor="#ccffcc"
+            android:text="Add a new To Do:"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
-        <TextView
+        <EditText
             android:id="@+id/Title"
-            android:padding="5dp"
-            android:textColor="#ccffcc"
             android:textSize="24dp"
-            android:text="Delet the To Do:"
+            android:textColor="#ccffcc"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"/>
 
         <LinearLayout
@@ -38,12 +34,13 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:weightSum="2">
+
             <Button
                 android:id="@+id/YesButton"
                 android:textSize="24dp"
-                android:background="#ccffcc"
+                android:text="Add"
                 android:textColor="#3366cc"
-                android:text="Yes"
+                android:background="#ccffcc"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"/>
@@ -51,9 +48,9 @@
             <Button
                 android:id="@+id/NoButton"
                 android:textSize="24dp"
-                android:background="#ccffcc"
+                android:text="Cancel"
                 android:textColor="#3366cc"
-                android:text="No"
+                android:background="#ccffcc"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"/>
