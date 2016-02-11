@@ -48,4 +48,10 @@ public class ThingToDo {
     public String toString(){
         return String.format("_id:%d, title:%s, completed:%b", id, title, completed);
     }
+
+    @Override
+    public boolean equals(Object object){
+        ThingToDo thingToDo = (ThingToDo) object;
+        return thingToDo.getTitle() == getTitle() && thingToDo.isCompleted() == isCompleted();
+    }
 }

@@ -64,7 +64,10 @@ public class ThingsToDoDataSourceTest extends ApplicationTest {
         thingsToDoDataSource.addThingToDo(thingsToDo.get(0));
         ThingToDo td;
         td = thingsToDoDataSource.getAllThingsToDo().get(0);
-        assertEquals(td.toString(), thingsToDoDataSource.getThingToDo(td.getId()).toString());
+        //assertTrue(td.e);
+        assertEquals(td.getTitle(), thingsToDo.get(0).getTitle());
+        assertEquals(td.isCompleted(), thingsToDo.get(0).isCompleted());
+
     }
 
     public void testGetAllThingsToDo() throws Exception {
@@ -90,5 +93,10 @@ public class ThingsToDoDataSourceTest extends ApplicationTest {
         ThingToDo utd = thingsToDoDataSource.getThingToDo(td.getId());
         assertEquals("Poop", utd.getTitle());
 
+    }
+
+    public void testGetAllThingsToDoReturnsANonNullItem(){
+        thingsToDoDataSource.deleteAllTodos();
+        assertNotNull(thingsToDoDataSource.getAllThingsToDo());
     }
 }
