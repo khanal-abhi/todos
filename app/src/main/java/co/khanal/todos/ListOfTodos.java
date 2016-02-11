@@ -42,6 +42,11 @@ public class ListOfTodos extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ThingToDo tdd = thingsToDo[position];
                 Toast.makeText(getApplicationContext(),tdd.toString(),Toast.LENGTH_SHORT).show();
+                if(!tdd.isCompleted()){
+                    tdd.setCompleted(true);
+                    updateTodo(tdd);
+                }
+
             }
         });
     }
@@ -79,6 +84,18 @@ public class ListOfTodos extends AppCompatActivity {
                 ThingToDo[] thingsToDo1 = {new ThingToDo("nothing to do ...")};
                 thingsToDo = thingsToDo1;
             }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }finally {
+            thingsToDoDataSource.close();
+        }
+    }
+
+    public void updateTodo(ThingToDo thingToDo){
+        try{
+            thingsToDoDataSource.open();
+            thingsToDoDataSource.updateThingToDo(thingToDo);
+            thingsToDoDataSource.close();
         } catch (SQLException e){
             e.printStackTrace();
         }finally {
